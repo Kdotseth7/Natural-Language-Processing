@@ -1,9 +1,7 @@
-# Stop Word Removal
+# Parts of Speech[POS] Tagging
 
 # Importing reqd. Libraries
 import nltk
-nltk.download("stopwords")
-from nltk.corpus import stopwords
 
 paragraph = """Thank you all so very much. Thank you to the Academy.
                Thank you to all of you in this room. I have to congratulate 
@@ -34,11 +32,14 @@ paragraph = """Thank you all so very much. Thank you to the Academy.
                out by the politics of greed. I thank you all for this 
                amazing award tonight. Let us not take this planet for 
                granted. I do not take tonight for granted. Thank you so very much."""
-               
-sentences = nltk.sent_tokenize(paragraph)
 
-for i in range(len(sentences)):
-    words = nltk.word_tokenize(sentences[i])
-    newWords = [word for word in words if word not in stopwords.words("english")]
-    sentences[i] = " ".join(newWords)
-    
+# POS Tagging
+words = nltk.word_tokenize(paragraph)
+
+tagged_Words = nltk.pos_tag(words)            
+word_Tags = []
+
+for tw in tagged_Words:
+    word_Tags.append(tw[0] + " " +  tw[1])
+
+tagged_Paragraph = " ".join(word_Tags)

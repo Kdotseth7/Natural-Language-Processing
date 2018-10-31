@@ -1,9 +1,10 @@
-# Stop Word Removal
+# Text Modelling using BAG OF WORDS Model
 
 # Importing reqd. Libraries
 import nltk
-nltk.download("stopwords")
-from nltk.corpus import stopwords
+import re
+import heapq
+import numpy as np
 
 paragraph = """Thank you all so very much. Thank you to the Academy.
                Thank you to all of you in this room. I have to congratulate 
@@ -34,11 +35,39 @@ paragraph = """Thank you all so very much. Thank you to the Academy.
                out by the politics of greed. I thank you all for this 
                amazing award tonight. Let us not take this planet for 
                granted. I do not take tonight for granted. Thank you so very much."""
-               
-sentences = nltk.sent_tokenize(paragraph)
 
-for i in range(len(sentences)):
-    words = nltk.word_tokenize(sentences[i])
-    newWords = [word for word in words if word not in stopwords.words("english")]
-    sentences[i] = " ".join(newWords)
+# STEP-1 : Collect Data and Pre-process it
+               
+dataset = nltk.sent_tokenize(paragraph)
+
+for i in range(len(dataset)):
+    dataset[i] = dataset[i].lower() # Convert text into Lowercase
+    dataset[i] = re.sub(r"\W"," ", dataset[i]) # Substitute non-word characters by a space
+    dataset[i] = re.sub(r"\s+"," ", dataset[i]) # Substitute multi-spaces by a single space
     
+# STEP-2 : Create HISTOGRAM using Vocabulary using Word Tokenization
+    
+word2count = {}  # Creating Vocabulary using a Dictionary[has key to value mappings]
+for data in dataset:
+    words = nltk.word_tokenize(data)
+    for word in words:
+        if word not in word2count.keys():
+            word2count[word] = 1
+        else:
+            word2count[word] +=1
+            
+freqWords = heapq.nlargest(100, word2count, key = word2count.get) # 100 most frequent words in dataset
+
+# STEP - 3 Create Document Vector
+
+X = []
+for data in dataset:
+    vector = []
+    for word in freqWords:
+        if word in nltk.word_tokenize(data):
+            vector.append(1)
+        else:
+            vector.append(0)
+    X.append(vector)
+    
+X = np.asarray(X) # Convert in 2D array using NumPy
